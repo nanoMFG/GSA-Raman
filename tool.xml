@@ -1,0 +1,49 @@
+<?xml version="0.1"?>
+<run>
+    <tool>
+        <title>Raman Analyzer</title>
+        <about>like the name says</about>
+        <command>octave --silent --eval infile='@driver',path('@tool',path),main</command>
+    </tool>
+    <input>
+        <string id="Input">
+            <about>
+                <label>Input</label>
+                <description>Why?</description>
+            </about>
+            <default>Because the man wants it this way</default>
+        </string>
+    </input>
+    <output>
+        <curve id="Raw">
+            <about>
+                <label>Raw</label>
+                <description>like a steak</description>
+                <group>1</group>
+            </about>
+            <xaxis>
+                <label>Shift [cm^-1]</label>
+                <description>shift</description>
+            </xaxis>
+            <yaxis>
+                <label>Intensity [arb]</label>
+                <description>intensity</description>
+            </yaxis>
+        </curve>
+        <curve id="Fit">
+            <about>
+                <label>Fit</label>
+                <description>like a soccer player, eating the aforementioned steak</description>
+                <group>1</group>
+            </about>
+            <xaxis>
+                <label>Shift [cm^-1]</label>
+                <description>shift</description>
+            </xaxis>
+            <yaxis>
+                <label>Intensity [arb]</label>
+                <description>intensity</description>
+            </yaxis>
+        </curve>
+    </output>
+</run>
