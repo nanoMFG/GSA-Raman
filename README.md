@@ -1,4 +1,4 @@
-For issue tracking visit: [issues](https://github.com/nanoMFG/Graphene-Synthesis-Analysis-issues) and [boards](https://github.com/nanoMFG/Graphene-Synthesis-Analysis-issues#boards)
+For issue tracking visit: [issues](https://github.com/nanoMFG/Graphene-Synthesis-Analysis-issues/issues) and [boards](https://github.com/nanoMFG/Graphene-Synthesis-Analysis-issues#boards)
 
 Proposed Readme template follows:
 
