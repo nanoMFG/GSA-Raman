@@ -122,12 +122,31 @@ end
 
 function XAVE=J_Ave(J,m)
     XAVE=zeros(size(J,1),size(J,2));
-    for i=1:m:size(J,1)%!!!!!<- FIX THIS SO THAT IT DOESN'T RUN OFF THE EDGE
-        for j=1:m:size(J,2)
-        pval=mean2(J(i:i+m-1,j:j+m-1));
-        XAVE(i:i+m-1,j:j+m-1)=pval;
-        end
+    r1 = rem(size(J,1),m); 
+    r2 = rem(size(J,2),m);    
+    if r1 == 0 
+        r1 = 16
+    end    
+    if r2 == 0
+        r2 = 16 
     end
+    for i=1:m:size(J,1)+m-r1
+        for j=1:m:size(J,2)+m-r2
+            if i+m-1 <= size(J,1) & j+m-1 <= size(J,2) %image arrays with both dimensions divisible y m
+                pval=mean2(J(i:i+m-1,j:j+m-1));
+                XAVE(i:i+m-1,j:j+m-1)=pval;
+            elseif i+m-1 > size(J,1) & j+m-1 <= size(J,2) %image arrays with rows indivisible by m
+                pval=mean2(J(i:i+r1-1,j:j+m-1));
+                XAVE(i:i+r1-1,j:j+m-1)=pval;
+            elseif i+m-1 <= size(J,1) & j+m-1 > size(J,2) %image arrays with columns indivisible by m
+                pval=mean2(J(i:i+m-1,j:j+r2-1));
+                XAVE(i:i+m-1,j:j+r2-1)=pval;
+            else i+m-1 > size(J,1) & j+m-1 > size(J,2) %image arrays with both dimensions indivisible by m
+                pval=mean2(J(i:i+r1-1,j:j+r2-1));
+                XAVE(i:i+r1-1,j:j+r2-1)=pval;
+            end
+        end
+     end
 end
 
 function XAVE=K_Ave(J,m)
