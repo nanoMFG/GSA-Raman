@@ -125,10 +125,10 @@ function XAVE=J_Ave(J,m)
     r1 = rem(size(J,1),m); 
     r2 = rem(size(J,2),m);    
     if r1 == 0 
-        r1 = 16
+        r1 = m
     end    
     if r2 == 0
-        r2 = 16 
+        r2 = m 
     end
     for i=1:m:size(J,1)+m-r1
         for j=1:m:size(J,2)+m-r2
