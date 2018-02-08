@@ -1,6 +1,7 @@
-function [xout,yout] = GpFit_Octave(xdat,ydat)
+function [xout,yout] = GpFit_Octave(xdat,ydat,io)
     %close all
     global plt1 plt2 n
+    %io
     plt1=0;plt2=0;n=6;
     if (length(xdat)<10000)
         N=10000;
@@ -41,7 +42,7 @@ end
 
 
 function F=multi_Lorentz(p,x)
-    global plt2 n
+    global plt2 n io
     F=0*x;
     FI=zeros(n,size(x,2));
     FWHM=p(4);
@@ -52,6 +53,16 @@ function F=multi_Lorentz(p,x)
         FI(i,:)=p(2)+Single_Lorentz([a,w,b],x); %Single Lorentzian
         if plt2==1
            %plot(x,FI(i,:),'r','linewidth',2);hold on; 
+           xydata = [x;FI(i,:)];
+           str = sprintf('%12g %12g\n', xydata);
+           path = sprintf('output.curve(Fit%d)', i);
+           name = sprintf('G''_%d', i);
+           fullpath = sprintf('%s.about.label', path);
+           rpLibPutString(io, fullpath, name, 0);
+           fullpath = sprintf('%s.component.xy', path);
+           rpLibPutString(io,fullpath,str,0);
+           fullpath = sprintf('%s.about.group', path);
+           rpLibPutString(io,fullpath,'1',0);
         end
     end
 
