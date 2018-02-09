@@ -48,13 +48,14 @@ function F=multi_Lorentz(p,x)
     F=0*x;
     FI=zeros(n+2,size(x,2));
     FWHM=p(4);
+
     for i=1:1:n+2
         a=p(3*i); %amplitudes of Lorentzians
         w=FWHM; %p((3*i)+1); %FWHM of Lorentzians
         b=p((3*i)+2); %shifts of Lorentzians
         FI(i,:)=p(2)+Single_Lorentz([a,w,b],x); %Single Lorentzian
         if plt2==1
-           %plot(x,FI(i,:),'r','linewidth',2);hold on; 
+           %plot the curves after the last run 
            xydata = [x;FI(i,:)];
            str = sprintf('%12g %12g\n', xydata);
            path = sprintf('output.curve(Fit%d)', i);
@@ -65,6 +66,15 @@ function F=multi_Lorentz(p,x)
            rpLibPutString(io,fullpath,str,0);
            fullpath = sprintf('%s.about.group', path);
            rpLibPutString(io,fullpath,'1',0);
+
+           %output fit parameters to text
+           str=sprintf('A_%d=%d W_%d=%d b_%d=%d\n',i,a,i,w,i,b);
+           path=sprintf('output.string(Fitting Parameters)');
+           name=sprintf('Fitting Parameters');
+           fullpath=sprintf('%s.about.label',path);
+           rpLibPutString(io,fullpath,name,0);
+           fullpath=sprintf('%s.current',path);
+           rpLibPutString(io,fullpath,str,1);
         end
     end
 
