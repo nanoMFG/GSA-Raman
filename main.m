@@ -31,7 +31,7 @@ fclose(fileID);
 x=dataArray(:,1).';
 y=dataArray(:,2).';
 %io
-[xout,yout]=GpFit_Octave(x,y,io);
+[xout,yout]=FRG_Octave(x,y,io);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % spit out progress messages as you go along...
