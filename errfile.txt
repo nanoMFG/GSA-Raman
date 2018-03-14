@@ -1,0 +1,2 @@
+Error Code 01: File type not recognized. Please upload a 2 column data file or Map file
+Error Code 02: New error code
