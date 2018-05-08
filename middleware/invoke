@@ -1,0 +1,4 @@
+#!/bin/sh
+
+/usr/bin/invoke_app "$@" -C "start_jupyter -t -T @tool GSA Raman Python.ipynb" -t GSAR \
+                         -u anaconda2-4.4
