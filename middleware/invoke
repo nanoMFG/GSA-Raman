@@ -1,4 +1,4 @@
 #!/bin/sh
 
 /usr/bin/invoke_app "$@" -C "start_jupyter -t -T @tool graft.ipynb" -t graft \
-                         -u anaconda2-4.4
+                         -u anaconda3-5.1
