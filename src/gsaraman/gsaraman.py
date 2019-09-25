@@ -39,13 +39,14 @@ pg.setConfigOption('foreground', 'k')
 pg.mkPen('k')
 
 class GSARaman(QtWidgets.QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, mode='local',parent=None):
         super(GSARaman,self).__init__(parent=parent)
         self.singleSpect=SingleSpect()
         self.mapFit=MapFit()
         self.resize(1100,600)
         self.spect_type=''
         self.data=[]
+        self.mode=mode
 
         self.layout=QtWidgets.QGridLayout(self)
         self.layout.setAlignment(QtCore.Qt.AlignTop)
