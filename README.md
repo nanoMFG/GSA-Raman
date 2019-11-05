@@ -72,7 +72,21 @@ Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c6
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
+
+[Bump2version](https://github.com/c4urself/bump2version) is used to increment the version and apply tags.  The basic setup follow tha guidlines illustrated [here](https://medium.com/@williamhayes/versioning-using-bumpversion-4d13c914e9b8).  All version bumps should happen on a clean working copy of the repository, after the last commit for that version has been pushed.  The push of the the `bump2version` changes will comprise the version.
+**Relavant files**
+```
+.bumpversion.cfg
+VERSION
+src/gsaraman/__init.py
+setup.py
+```
+
+### Development Versions
+For commits that are to be merged to master for further testing, a development version should be created.  
+
+### Tagged Releases
 
 ## Authors
 
