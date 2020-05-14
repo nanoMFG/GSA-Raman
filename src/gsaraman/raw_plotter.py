@@ -50,7 +50,7 @@ class RamanWidget(QtWidgets.QWidget):
 
         self.f_list=filelist
 
-        self.viewraman = pg.PlotWidget()
+#        self.viewraman = pg.PlotWidget()
         self.viewraman.doFitting()
 
     def make_temp_dir(self):
