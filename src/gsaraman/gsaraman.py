@@ -133,6 +133,8 @@ class GSARaman(QtWidgets.QWidget):
         else:
             self.spect_type='map'
 
+        return self.data
+
     def doFitting(self):
         if not self.pathmade:
                 self.make_temp_dir()

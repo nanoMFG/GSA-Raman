@@ -38,7 +38,7 @@ class RamanWidget(QtWidgets.QWidget):
         if path[-3:]!='txt' and path[-3:]!='csv':
             raise ValueError('Please upload a .txt or .csv file')
 
-    @errorCheck()
+    @errorCheck(show_traceback=True)
     def loadData(self, path):
         if path[-3:]=='csv':
             self.data=pd.read_csv(path)
