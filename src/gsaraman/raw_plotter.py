@@ -10,7 +10,7 @@ import pandas as pd
 import numpy as np 
 import matplotlib.pyplot as plt 
 #from skimage import util
-from .util import errorCheck
+from gsaraman.util import errorCheck
 import os,subprocess,sys
 
 pg.setConfigOption('background', 'w')
