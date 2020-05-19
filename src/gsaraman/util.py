@@ -32,7 +32,7 @@ def errorCheck(success_text=None, error_text="Error!",logging=True,show_tracebac
     show_traceback:             (bool) Whether to display full traceback in error dialog box. 
     skip:                       (bool) Whether to skip errorCheck. Useful for testing.
     """
-    def decorator(func):
+    #def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             if inspect.ismethod(func):
@@ -61,4 +61,4 @@ def errorCheck(success_text=None, error_text="Error!",logging=True,show_tracebac
                 error_dialog.exec()
 
         return wrapper
-    return decorator
+    #return decorator

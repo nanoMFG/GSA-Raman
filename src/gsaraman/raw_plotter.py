@@ -25,12 +25,14 @@ class RamanWidget(QtWidgets.QWidget):
         self.checkFileType(path)
         frequency, intensity_norm = self.loadData(path)
 
-        self.plot_spect = pg.PlotWidget()
+        #self.plot_spect = pg.PlotWidget()
+        #self.plot_spect.plot(frequency,intensity_norm,pen=pg.mkPen('k',width=4),brush=pg.mkBrush('b',alpha=0.3))
+        self.plot_spect = pg.plot(frequency,intensity_norm,pen=pg.mkPen('k',width=4),brush=pg.mkBrush('b',alpha=0.3))
         self.plot_spect.setLabel('left','I<sub>norm</sub>[arb]')
         self.plot_spect.setLabel('bottom',u'\u03c9'+'[cm<sup>-1</sup>]')
-        self.plot_spect.plot(frequency,intensity_norm,pen=pg.mkPen('k',width=4),brush=pg.mkBrush('b',alpha=0.3))
+        #self.plot_spect.win.hide()
 
-        self.viewraman.addWidget(self.plot_spect,0,0)
+        self.viewraman.addWidget(self.plot_spect,0,1)
         self.viewraman.setAlignment(QtCore.Qt.AlignTop)
 
     @errorCheck()
