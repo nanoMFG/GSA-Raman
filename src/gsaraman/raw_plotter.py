@@ -10,7 +10,8 @@ import pandas as pd
 import numpy as np 
 import matplotlib.pyplot as plt 
 #from skimage import util
-from .util import errorCheck
+from util import errorCheck
+import os,subprocess,sys
 
 pg.setConfigOption('background', 'w')
 pg.setConfigOption('foreground', 'k')
@@ -18,22 +19,22 @@ pg.setConfigOption('foreground', 'k')
 class RamanWidget(QtWidgets.QWidget):
     def __init__(self, path, specttype='single', *args,**kwargs):
         super(RamanWidget, self).__init__(*args,**kwargs)
-        self.viewraman = QtWidgets.QGridLayout()
+        layout = QtWidgets.QGridLayout(self)
         self.data = []
         self.spect_type = specttype
 
         self.checkFileType(path)
         frequency, intensity_norm = self.loadData(path)
 
-        #self.plot_spect = pg.PlotWidget()
-        #self.plot_spect.plot(frequency,intensity_norm,pen=pg.mkPen('k',width=4),brush=pg.mkBrush('b',alpha=0.3))
-        self.plot_spect = pg.plot(frequency,intensity_norm,pen=pg.mkPen('k',width=4),brush=pg.mkBrush('b',alpha=0.3))
+        self.plot_spect = pg.PlotWidget()
+        self.plot_spect.plot(frequency,intensity_norm,pen=pg.mkPen('k',width=4),brush=pg.mkBrush('b',alpha=0.3))
+        # self.plot_spect = pg.plot(frequency,intensity_norm,pen=pg.mkPen('k',width=4),brush=pg.mkBrush('b',alpha=0.3))
         self.plot_spect.setLabel('left','I<sub>norm</sub>[arb]')
         self.plot_spect.setLabel('bottom',u'\u03c9'+'[cm<sup>-1</sup>]')
         #self.plot_spect.win.hide()
 
-        self.viewraman.addWidget(self.plot_spect,0,1)
-        self.viewraman.setAlignment(QtCore.Qt.AlignTop)
+        layout.addWidget(self.plot_spect,0,0)
+        layout.setAlignment(QtCore.Qt.AlignTop)
 
     @errorCheck()
     def checkFileType(self, path):
@@ -312,3 +313,10 @@ class RamanWidget(QtWidgets.QWidget):
 # #         self.spect_plot.setLabel('left','I<sub>norm</sub>[arb]')
 # #         self.spect_plot.setLabel('bottom',u'\u03c9'+'[cm<sup>-1</sup>]')
 # #         self.spect_plot.win.hide()
+
+if __name__ == '__main__':
+    REPO_DIR = subprocess.Popen(['git', 'rev-parse', '--show-toplevel'], stdout=subprocess.PIPE).communicate()[0].rstrip().decode('utf-8')
+    app = QtGui.QApplication([])
+    raman = RamanWidget(path=os.path.join(REPO_DIR,'data','raw','spectest.csv'))
+    raman.show()
+    sys.exit(app.exec_())
