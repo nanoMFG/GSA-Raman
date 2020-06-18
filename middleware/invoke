@@ -1,4 +1,5 @@
 #!/bin/sh
 
-/usr/bin/invoke_app "$@" -C "start_jupyter -t -T @tool graft.ipynb" -t graft \
-                         -u anaconda2-4.4
+/usr/bin/invoke_app "$@" -C "python @tool/bin/gsaraman/gsaraman-new.py nanohub" -t graft \
+                         -u anaconda3-5.1\
+                         -u pyqtgraph-0.10.0

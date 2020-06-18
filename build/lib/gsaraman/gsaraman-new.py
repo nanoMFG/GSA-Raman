@@ -2,7 +2,6 @@ from __future__ import division
 import matplotlib
 matplotlib.use('Qt5Agg')
 from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt
 import pyqtgraph as pg
 import pyqtgraph.exporters
 import pandas as pd
@@ -55,18 +54,18 @@ class GSARaman(QtWidgets.QWidget):
 
         self.flbut=QtWidgets.QPushButton('Upload File')
         self.flbut.clicked.connect(self.openFileName)
-        self.flbut.setFixedSize(500,50)
+        self.flbut.setFixedSize(400,50)
         self.layout.addWidget(self.flbut,0,0)
 
         self.fitbut=QtWidgets.QPushButton('Do Fitting')
         self.fitbut.clicked.connect(self.doFitting)
         self.fitbut.setEnabled(False)
-        self.fitbut.setFixedSize(500,50)
+        self.fitbut.setFixedSize(400,50)
         self.layout.addWidget(self.fitbut,0,1)
 
         self.download_but=QtWidgets.QPushButton('Download Data')
         self.download_but.clicked.connect(self.downloadData)
-        self.download_but.setFixedSize(500,50)
+        self.download_but.setFixedSize(400,50)
         self.download_but.setEnabled(False)
         self.layout.addWidget(self.download_but,1,1)
         self.download_list=[]
@@ -298,9 +297,6 @@ class SingleSpect(QtWidgets.QWidget):
         exporter2.params.param('height').setValue(860, blockSignal=exporter2.heightChanged)
         exporter2.export(raman.newpath+'/overlayplot.png')
 
-        #for i in reversed(range(layout.count())): 
-        #    layout.itemAt(i).widget().setParent(None)
-        
         self.fitting_params=QtWidgets.QLabel(
             """Fitting Parameters:
             G Peak:
@@ -318,11 +314,7 @@ class SingleSpect(QtWidgets.QWidget):
             Quality="""+str(round(1-(D_param[0]/G_param[0]),4))+"""(Ratio of D to G)
             Number of layers (best match): """+self.layers)
 
-        #self.fitting_params.setFixedSize(500,500)
-        pal = self.fitting_params.palette()
-        pal.setColor(self.fitting_params.backgroundRole(), Qt.white)
-        self.fitting_params.setPalette(pal)
-        self.fitting_params.setAutoFillBackground(True)
+        self.fitting_params.setFixedSize(500,500)
         self.layout.addWidget(self.fitting_params,2,2)
 
     def plotSpect(self,x,y):
@@ -331,7 +323,7 @@ class SingleSpect(QtWidgets.QWidget):
             y_norm.append((i-np.min(y))/(np.max(y)-np.min(y)))
 
         self.spect_plot=pg.plot(x,y_norm,pen='k')
-        self.spect_plot.setFixedSize(500,500)
+        self.spect_plot.setFixedSize(400,500)
         self.spect_plot.setLabel('left','I<sub>norm</sub>[arb]')
         self.spect_plot.setLabel('bottom',u'\u03c9'+'[cm<sup>-1</sup>]')
         self.spect_plot.win.hide()
