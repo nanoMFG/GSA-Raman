@@ -2,6 +2,7 @@ from __future__ import division
 import matplotlib
 matplotlib.use('Qt5Agg')
 from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5.QtCore import Qt
 import pyqtgraph as pg
 import pyqtgraph.exporters
 import pandas as pd
@@ -297,6 +298,9 @@ class SingleSpect(QtWidgets.QWidget):
         exporter2.params.param('height').setValue(860, blockSignal=exporter2.heightChanged)
         exporter2.export(raman.newpath+'/overlayplot.png')
 
+        #for i in reversed(range(layout.count())): 
+        #    layout.itemAt(i).widget().setParent(None)
+
         self.fitting_params=QtWidgets.QLabel(
             """Fitting Parameters:
             G Peak:
@@ -314,7 +318,11 @@ class SingleSpect(QtWidgets.QWidget):
             Quality="""+str(round(1-(D_param[0]/G_param[0]),4))+"""(Ratio of D to G)
             Number of layers (best match): """+self.layers)
 
-        self.fitting_params.setFixedSize(500,500)
+        #self.fitting_params.setFixedSize(500,500)
+        pal = self.fitting_params.palette()
+        pal.setColor(self.fitting_params.backgroundRole(), Qt.white)
+        self.fitting_params.setPalette(pal)
+        self.fitting_params.setAutoFillBackground(True)
         self.layout.addWidget(self.fitting_params,2,2)
 
     def plotSpect(self,x,y):
