@@ -75,6 +75,20 @@ Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c6
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
 
 [Bump2version](https://github.com/c4urself/bump2version) is used to increment the version and apply tags.  The basic setup follow tha guidlines illustrated [here](https://medium.com/@williamhayes/versioning-using-bumpversion-4d13c914e9b8).  All version bumps should happen on a clean working copy of the repository, after the last commit for that version has been pushed.  The push of the the `bump2version` changes will comprise the version.
+
+Example bump2version commands <br>
+```
+$ cat VERSION
+0.0.0$ bumpversion major; cat VERSION
+1.0.0-dev0$ bumpversion minor; cat VERSION
+1.1.0-dev0$ bumpversion patch; cat VERSION
+1.1.1-dev0$ bumpversion build; cat VERSION
+1.1.1-dev1$ bumpversion build; cat VERSION
+1.1.1-dev2$ bumpversion --tag release; cat VERSION
+1.1.1$ bumpversion minor; cat VERSION
+1.2.0-dev0
+```
+
 **Relavant files**
 ```
 .bumpversion.cfg
