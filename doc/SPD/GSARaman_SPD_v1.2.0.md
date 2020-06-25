@@ -1,7 +1,7 @@
 # nanoMFG Software Planning Document
 <!-- Replace text below with long title of project:short-name -->
 ## Graphene Raman Analysis Tool: GSARaman
-### Target Release: 1.2.0 : July 31, 2019
+### Target Release: 1.3.0 : October 25, 2019
 
 ## Development Team
 <!-- Complete table for all team members 
@@ -15,6 +15,7 @@ Sameh Tawfick | PI | --- | --- | tawfick@illinois.edu | active
 Matthew Robertson | developer | mgrober2 | Matthew Glen Robertson | mgrober2@illinois.edu | inactive
 Kristina Miller | developer | kmmille | Kristina M Miller | kmmille2@illinois.edu | inactive
 Darren Adams | developer | dadamsncsa | Darren K Adams | dadams@illinois.edu | active
+Aagam Shah | developer | AagamShah97 | Aagam Rajeev Shah | aagam2@illinois.edu | active
 
 
 **nanoMFG Github Team(s):** @GSA-dev
@@ -22,12 +23,15 @@ Darren Adams | developer | dadamsncsa | Darren K Adams | dadams@illinois.edu | a
 
 ## 1. Introduction
 <!-- A  concise description of the current iteration of work. -->
+The Graphene Raman Analysis Tool is made to analyse the Raman spectrum of graphene.
 
 ### 1.1 Purpose and Vision Statement
 <!--Why are we building this tool? What is the key benefit? How does it relate to existing tools and existing software? How does it fit into the overall objectives for the nanoMFG node? Who will use it?-->
+This tool aims to automate the process of analysing Raman spectra of graphene. It allows us to more accurately estimate the number of layer of graphene deposited and the quality. It can be integrated into the Graphene ResQ tool.
 
 ### 1.2 References
 <!--List any documents or background material that are relevant.  Links are useful. For instance, a link to a wiki or readme page in the project repository, or link to a uploaded file (doc, pdf, ppt, etc.).-->
+
 
 ## 2 Overview and Major Planned Features
 <!--Provide and overview characterising this proposed release.  Describe how users will interact with each proposed feature.-->
@@ -63,6 +67,8 @@ Features used
 Experience level
 Type of interaction
 Provide links to any user surveys, questionnaires, interviews, feedback or other relevant information.-->
+Class 1 - Analysis: These users need to analyse Raman spectra of graphene and determine the quality and number of layers present.
+Class 2 - Developers: These users need to integrate this tool into other tools, such as the Graphene ResQ tool.
 
 ### 3.2 User Requirements
 <!-- Provide a list of issue links to document the main set of user requirements to be satisfied by this release.  Use the user requirement template to draft thense issues.  A well written user requirement should be easy to justify (Rational) and should be testable.  List in order of priority as must have, should have or nice to have for each use case. -->
