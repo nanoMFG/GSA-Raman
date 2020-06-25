@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import qimage2ndarray
 import tempfile
 import shutil
-import os
+import subprocess, os
 import zipfile
 from zipfile import ZipFile
 import json
