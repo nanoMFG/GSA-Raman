@@ -19,10 +19,13 @@ import matplotlib.pyplot as plt
 import qimage2ndarray
 import tempfile
 import shutil
-import os
+import subprocess, os
 import zipfile
 from zipfile import ZipFile
 import json
+from util.icons import Icon
+import sys
+
 
 filelist=[]
 layer1=[{'a':3.00007920e-01,'w':3.73588869e+01,'b':1.58577373e+03},{'a':1.00000000e+00,'w':3.25172389e+01,'b':2.68203383e+03}]
@@ -36,6 +39,95 @@ cdat={'monolayer':layer1,'bilayer':layer2,'trilayer':layer3,'four layers':layer4
 pg.setConfigOption('background', 'w')
 pg.setConfigOption('foreground', 'k')
 pg.mkPen('k')
+
+QW=QtWidgets
+QC=QtCore
+QG=QtGui
+
+class Main(QW.QMainWindow):
+    """
+    Main window containing the GSARaman widget. Adds menu bar / tool bar functionality.
+    """
+    def __init__(self,mode='local', repo_dir = '', *args,**kwargs):
+        super(Main,self).__init__(*args,**kwargs)
+
+        self.mode = mode
+        self.repo_dir = repo_dir
+        self.mainWidget = GSARaman(mode=mode)
+        self.setCentralWidget(self.mainWidget)
+
+        # building main menu
+        mainMenu = self.menuBar()
+        mainMenu.setNativeMenuBar(False)
+
+        # importAction = QG.QAction("&Import",self)
+        # importAction.setIcon(Icon('download.svg'))
+        # importAction.triggered.connect(self.mainWidget.importTrigger)
+
+        # exportAction = QG.QAction("&Export",self)
+        # exportAction.setIcon(Icon('upload.svg'))
+        # exportAction.triggered.connect(self.mainWidget.exportTrigger)
+
+        # clearAction = QG.QAction("&Clear",self)
+        # clearAction.setIcon(Icon('trash.svg'))
+        # clearAction.triggered.connect(lambda _: self.mainWidget.clear())
+
+        exitAction = QG.QAction("&Exit",self)
+        exitAction.setIcon(Icon('log-out.svg'))
+        exitAction.triggered.connect(self.close)
+        
+        fileMenu = mainMenu.addMenu('&File')
+        # fileMenu.addAction(importAction)
+        # fileMenu.addAction(exportAction)
+        # fileMenu.addAction(clearAction)
+        if mode == 'local':
+            fileMenu.addAction(exitAction)
+
+        aboutAction = QG.QAction("&About",self)
+        aboutAction.setIcon(Icon('info.svg'))
+        aboutAction.triggered.connect(self.showAboutDialog)
+
+        testImageAction = QG.QAction("&Import Test Spectrum",self)
+        testImageAction.setIcon(Icon('image.svg'))
+        testImageAction.triggered.connect(self.importTestSpectrum)
+
+        helpMenu = mainMenu.addMenu('&Help')
+        helpMenu.addAction(testImageAction)
+        helpMenu.addAction(aboutAction)
+
+        self.show()
+
+    def showAboutDialog(self):
+        about_dialog = QW.QMessageBox(self)
+        about_dialog.setText("About This Tool")
+        about_dialog.setWindowModality(QC.Qt.WindowModal)
+        copyright_path = os.path.join(self.repo_dir,'COPYRIGHT')
+        print(f"okay:{copyright_path}")
+        if os.path.isfile(copyright_path):
+            with open(copyright_path,'r') as f:
+                copyright = f.read()
+                print(f"hey:{copyright}")
+        else:
+            copyright = ""
+
+        version_path =  os.path.join(self.repo_dir,'VERSION')
+        if os.path.isfile(version_path):
+            with open(os.path.join(self.repo_dir,'VERSION'),'r') as f:
+                version = f.read()
+        else:
+            version = ""
+
+        # Needs text
+        about_text = "Version: %s \n\n"%version
+        about_text += copyright
+
+        about_dialog.setInformativeText(about_text)
+        about_dialog.exec()
+
+    def importTestSpectrum(self):
+        path = os.path.join(self.repo_dir,'data','raw','spectest.csv')
+        filelist.append(path)
+        self.mainWidget.fitbut.setEnabled(True)
 
 class GSARaman(QtWidgets.QWidget):
     def __init__(self, mode='local',parent=None):
@@ -348,8 +440,33 @@ class SingleSpect(QtWidgets.QWidget):
         self.layout.addWidget(self.spect_plot,2,0)
 
 
-if __name__=='__main__':
+def main():
+    nargs = len(sys.argv)
+    if nargs > 1:
+        mode = sys.argv[1]
+    else:
+        mode = 'local'
+    if mode not in ['nanohub','local']:
+        mode = 'local'
+
+    REPO_DIR = "."
+    if mode == 'local':
+        REPO_DIR = subprocess.Popen(['git', 'rev-parse', '--show-toplevel'], stdout=subprocess.PIPE).communicate()[0].rstrip().decode('utf-8')
+    else:
+        if os.environ.get("RUN_LOCATION"):
+            REPO_DIR = os.environ.get("RUN_LOCATION")
+    
     app=QtWidgets.QApplication([])
-    raman=GSARaman()
-    raman.show()
-    app.exec_()
+    raman=Main(mode=mode, repo_dir=REPO_DIR)
+    #raman.show()
+    sys.exit(app.exec_())
+
+if __name__ == '__main__':
+    main()
+
+# if __name__=='__main__':
+#     REPO_DIR = subprocess.Popen(['git', 'rev-parse', '--show-toplevel'], stdout=subprocess.PIPE).communicate()[0].rstrip().decode('utf-8')
+#     app=QtWidgets.QApplication([])
+#     raman=Main(mode=mode, repo_dir=REPO_DIR)
+#     raman.show()
+#     app.exec_()
