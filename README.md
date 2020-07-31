@@ -102,9 +102,27 @@ For commits that are to be merged to master for further testing, a development v
 
 ### Tagged Releases
 
-## Authors
+## nanoHUB Release Procedure
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+1. Test code on nanoHUB using the nanoHUB Jupyter Notebook tool.
+
+2. Ensure all relavent code and implementation reviews have been approved.
+
+3. Check VERSION and use bump2version, if needed (see Versioning above).  For final releaseto remove the "-dev" designation from the version string, use the following bumpversion command:
+`bumpversion --tag release` <br>
+or <br>
+`bumpversion --no-tag release` <br>
+the former can be done directly in master while the second option can be done in a development branch (and merged to master via PR), or master directly.
+
+4. Merge or changes to master via PR.  (May entail code or implementation review).
+
+5. Click the "..please instal latest..." link on nanoHUB tool status page: https://nanohub.org/tools/graft/status and wait for tool status to be installed.
+
+6. Test installed tool (May entail implementation review).
+
+7. Approve installation.  Again done in the tool status page.  Make sure nanoHUB version string matches the one genrated above.
+
+## Authors
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
