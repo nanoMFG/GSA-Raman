@@ -26,6 +26,7 @@ import json
 from util.icons import Icon
 import sys
 
+IMPORT_LOCATION = "/apps/importfile/bin/importfile"
 
 filelist=[]
 layer1=[{'a':3.00007920e-01,'w':3.73588869e+01,'b':1.58577373e+03},{'a':1.00000000e+00,'w':3.25172389e+01,'b':2.68203383e+03}]
@@ -183,7 +184,7 @@ class GSARaman(QtWidgets.QWidget):
                 print(e)
         elif self.mode == 'nanohub':
             try:
-                fpath = subprocess.check_output('importfile',shell=True).strip().decode("utf-8")
+                fpath = subprocess.check_output(IMPORT_LOCATION,shell=True).strip().decode("utf-8")
             except Exception as e:
                 print(e)
 
