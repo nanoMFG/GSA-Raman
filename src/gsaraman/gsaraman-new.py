@@ -26,6 +26,7 @@ import json
 from util.icons import Icon
 import sys
 
+IMPORT_LOCATION = "/apps/importfile/bin/importfile"
 
 filelist=[]
 layer1=[{'a':3.00007920e-01,'w':3.73588869e+01,'b':1.58577373e+03},{'a':1.00000000e+00,'w':3.25172389e+01,'b':2.68203383e+03}]
@@ -60,9 +61,9 @@ class Main(QW.QMainWindow):
         mainMenu = self.menuBar()
         mainMenu.setNativeMenuBar(False)
 
-        # importAction = QG.QAction("&Import",self)
-        # importAction.setIcon(Icon('download.svg'))
-        # importAction.triggered.connect(self.mainWidget.importTrigger)
+        importAction = QG.QAction("&Import",self)
+        importAction.setIcon(Icon('download.svg'))
+        importAction.triggered.connect(self.mainWidget.openFileName)
 
         # exportAction = QG.QAction("&Export",self)
         # exportAction.setIcon(Icon('upload.svg'))
@@ -77,7 +78,7 @@ class Main(QW.QMainWindow):
         exitAction.triggered.connect(self.close)
         
         fileMenu = mainMenu.addMenu('&File')
-        # fileMenu.addAction(importAction)
+        fileMenu.addAction(importAction)
         # fileMenu.addAction(exportAction)
         # fileMenu.addAction(clearAction)
         if mode == 'local':
@@ -160,7 +161,7 @@ class GSARaman(QtWidgets.QWidget):
         self.download_but.clicked.connect(self.downloadData)
         self.download_but.setFixedSize(500,50)
         self.download_but.setEnabled(False)
-        self.layout.addWidget(self.download_but,1,1)
+        #self.layout.addWidget(self.download_but,1,1)
         self.download_list=[]
 
         self.statusBar=QtWidgets.QProgressBar()
@@ -183,7 +184,7 @@ class GSARaman(QtWidgets.QWidget):
                 print(e)
         elif self.mode == 'nanohub':
             try:
-                fpath = subprocess.check_output('importfile',shell=True).strip().decode("utf-8")
+                fpath = subprocess.check_output(IMPORT_LOCATION,shell=True).strip().decode("utf-8")
             except Exception as e:
                 print(e)
 
@@ -360,8 +361,8 @@ class SingleSpect(QtWidgets.QWidget):
         D_fit=self.Single_Lorentz(x,D_param[0],D_param[1],D_param[2])
 
         param_dict={'G':{'a':G_param[0],'w':G_param[1],'b':G_param[2]},'Gp':{'a':Gp_param[0],'w':Gp_param[1],'b':Gp_param[2]},'D':{'a':D_param[0],'w':D_param[1],'b':D_param[2]}}
-        with open(raman.newpath+'/spectParams.json','w') as fp:
-            data=json.dump(param_dict, fp, sort_keys=True, indent=4)
+        #with open(raman.mainWidget.newpath+'/spectParams.json','w') as fp:
+        #    data=json.dump(param_dict, fp, sort_keys=True, indent=4)
 
         y_fit=G_fit+Gp_fit+D_fit
         self.checkParams(G_param,Gp_param)
@@ -388,7 +389,7 @@ class SingleSpect(QtWidgets.QWidget):
         exporter2=pg.exporters.ImageExporter(self.overlay_plot.plotItem)
         exporter2.params.param('width').setValue(1024, blockSignal=exporter2.widthChanged)
         exporter2.params.param('height').setValue(860, blockSignal=exporter2.heightChanged)
-        exporter2.export(raman.newpath+'/overlayplot.png')
+        #exporter2.export(raman.newpath+'/overlayplot.png')
 
         #for i in reversed(range(layout.count())): 
         #    layout.itemAt(i).widget().setParent(None)
