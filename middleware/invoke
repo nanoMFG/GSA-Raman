@@ -1,5 +1,6 @@
 #!/bin/sh
 
 /usr/bin/invoke_app "$@" -C "python @tool/bin/gsaraman/gsaraman-new.py nanohub" -t graft \
+                         -e RUN_LOCATION=@tool/bin \
                          -u anaconda3-5.1\
                          -u pyqtgraph-0.10.0

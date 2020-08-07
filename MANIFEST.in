@@ -1,2 +1,2 @@
 include data/raw/*.csv
-include src/gsaimage/util/icons_catalogue/*.svg ../data/*.tif
+include src/gsaraman/util/icons_catalogue/*.svg ../data/*.tif
