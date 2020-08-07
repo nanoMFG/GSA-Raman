@@ -14,5 +14,6 @@ setup(
           'gui_scripts': [
               'gsaraman = gsaraman.__main__:main'
           ]
-      }
+      },
+    include_package_data=True,
 )
