@@ -223,8 +223,11 @@ class GSARaman(QtWidgets.QWidget):
                 self.data=self.data.iloc[1:rows,:]
             else:
                 self.data=self.data
-        # else:
-        #     self.spect_type='map'
+        else:
+            self.spect_type='map'
+            self.errmsg.setIcon(QtWidgets.QMessageBox.Critical)
+            self.errmsg.setText('Please upload a single spectrum')
+            elf.errmsg.exec_()
 
     def doFitting(self):
         if not self.pathmade:
@@ -340,7 +343,7 @@ class SingleSpect(QtWidgets.QWidget):
         self.diff_plot=pg.plot(x,diff_array,pen=None,symbol='o')
         self.diff_plot.setLabel('left',u'\u0394'+'[%]')
         self.diff_plot.setLabel('bottom','# Layers')
-        ticks=[list(zip(range(7),('','1','2','3','4','5','graphene')))]
+        ticks=[list(zip(range(7),('','1','2','3','4','5','graphite')))]
         self.diff_label=self.diff_plot.getAxis('bottom')
         self.diff_label.setTicks(ticks)
         self.diff_plot.win.hide()
