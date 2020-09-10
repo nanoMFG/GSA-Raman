@@ -417,7 +417,7 @@ class SingleSpect(QtWidgets.QWidget):
                 """u'\u03b1'"""="""+str(round(D_param[0],4))+"""
                 """u'\u0393'"""="""+str(round(D_param[1],4))+"""
                 """u'\u03c9'"""="""+str(round(D_param[2],4))+"""
-            Quality="""+str(round(1-(D_param[0]/G_param[0]),4))+"""(Ratio of D to G)
+            Quality="""+str(round(1-(D_param[0]/G_param[0]),4))+"""(1 - Int(D)/Int(G))
             Number of layers (best match): """+self.layers)
 
         #self.fitting_params.setFixedSize(500,500)
