@@ -223,8 +223,11 @@ class GSARaman(QtWidgets.QWidget):
                 self.data=self.data.iloc[1:rows,:]
             else:
                 self.data=self.data
-        # else:
-        #     self.spect_type='map'
+        else:
+            self.spect_type='map'
+            self.errmsg.setIcon(QtWidgets.QMessageBox.Critical)
+            self.errmsg.setText('Please upload a single spectrum')
+            self.errmsg.exec_()
 
     def doFitting(self):
         if not self.pathmade:
@@ -338,9 +341,10 @@ class SingleSpect(QtWidgets.QWidget):
         self.layers=layer_keys[idx]
 
         self.diff_plot=pg.plot(x,diff_array,pen=None,symbol='o')
+        self.diff_plot.setMenuEnabled(False)
         self.diff_plot.setLabel('left',u'\u0394'+'[%]')
         self.diff_plot.setLabel('bottom','# Layers')
-        ticks=[list(zip(range(7),('','1','2','3','4','5','graphene')))]
+        ticks=[list(zip(range(7),('','1','2','3','4','5','graphite')))]
         self.diff_label=self.diff_plot.getAxis('bottom')
         self.diff_label.setTicks(ticks)
         self.diff_plot.win.hide()
@@ -376,6 +380,7 @@ class SingleSpect(QtWidgets.QWidget):
         y_test=G_test+Gp_test
 
         self.fit_plot=pg.plot(x,y_fit,pen='k')
+        self.fit_plot.setMenuEnabled(False)
         self.fit_plot.setRange(yRange=[0,1])
         self.fit_plot.setLabel('left','I<sub>norm</sub>[arb]')
         self.fit_plot.setLabel('bottom',u'\u03c9'+'[cm<sup>-1</sup>]')
@@ -386,6 +391,7 @@ class SingleSpect(QtWidgets.QWidget):
         self.overlay_plot.plot(x,y,pen='g',name='Raw Data')
         self.overlay_plot.plot(x,y_fit,pen='r',name='Fitted Data')
         self.overlay_plot.plot(x,y_test,pen='b',name='Test Data')
+        self.overlay_plot.setMenuEnabled(False)
         self.overlay_plot.setLabel('left','I<sub>norm</sub>[arb]')
         self.overlay_plot.setLabel('bottom',u'\u03c9'+'[cm<sup>-1</sup>]')
         self.overlay_plot.win.hide()
@@ -411,7 +417,7 @@ class SingleSpect(QtWidgets.QWidget):
                 """u'\u03b1'"""="""+str(round(D_param[0],4))+"""
                 """u'\u0393'"""="""+str(round(D_param[1],4))+"""
                 """u'\u03c9'"""="""+str(round(D_param[2],4))+"""
-            Quality="""+str(round(1-(D_param[0]/G_param[0]),4))+"""(Ratio of D to G)
+            Quality="""+str(round(1-(D_param[0]/G_param[0]),4))+"""(1 - Int(D)/Int(G))
             Number of layers (best match): """+self.layers)
 
         #self.fitting_params.setFixedSize(500,500)
@@ -428,6 +434,7 @@ class SingleSpect(QtWidgets.QWidget):
             y_norm.append((i-np.min(y))/(np.max(y)-np.min(y)))
 
         self.spect_plot=pg.plot(x,y_norm,pen='k')
+        self.spect_plot.setMenuEnabled(False)
         self.spect_plot.setMinimumSize(220,500)
         self.spect_plot.setLabel('left','I<sub>norm</sub>[arb]')
         self.spect_plot.setLabel('bottom',u'\u03c9'+'[cm<sup>-1</sup>]')
