@@ -227,7 +227,7 @@ class GSARaman(QtWidgets.QWidget):
             self.spect_type='map'
             self.errmsg.setIcon(QtWidgets.QMessageBox.Critical)
             self.errmsg.setText('Please upload a single spectrum')
-            elf.errmsg.exec_()
+            self.errmsg.exec_()
 
     def doFitting(self):
         if not self.pathmade:
