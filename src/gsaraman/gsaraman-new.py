@@ -341,6 +341,7 @@ class SingleSpect(QtWidgets.QWidget):
         self.layers=layer_keys[idx]
 
         self.diff_plot=pg.plot(x,diff_array,pen=None,symbol='o')
+        self.diff_plot.setMenuEnabled(False)
         self.diff_plot.setLabel('left',u'\u0394'+'[%]')
         self.diff_plot.setLabel('bottom','# Layers')
         ticks=[list(zip(range(7),('','1','2','3','4','5','graphite')))]
@@ -379,6 +380,7 @@ class SingleSpect(QtWidgets.QWidget):
         y_test=G_test+Gp_test
 
         self.fit_plot=pg.plot(x,y_fit,pen='k')
+        self.fit_plot.setMenuEnabled(False)
         self.fit_plot.setRange(yRange=[0,1])
         self.fit_plot.setLabel('left','I<sub>norm</sub>[arb]')
         self.fit_plot.setLabel('bottom',u'\u03c9'+'[cm<sup>-1</sup>]')
@@ -389,6 +391,7 @@ class SingleSpect(QtWidgets.QWidget):
         self.overlay_plot.plot(x,y,pen='g',name='Raw Data')
         self.overlay_plot.plot(x,y_fit,pen='r',name='Fitted Data')
         self.overlay_plot.plot(x,y_test,pen='b',name='Test Data')
+        self.overlay_plot.setMenuEnabled(False)
         self.overlay_plot.setLabel('left','I<sub>norm</sub>[arb]')
         self.overlay_plot.setLabel('bottom',u'\u03c9'+'[cm<sup>-1</sup>]')
         self.overlay_plot.win.hide()
@@ -431,6 +434,7 @@ class SingleSpect(QtWidgets.QWidget):
             y_norm.append((i-np.min(y))/(np.max(y)-np.min(y)))
 
         self.spect_plot=pg.plot(x,y_norm,pen='k')
+        self.spect_plot.setMenuEnabled(False)
         self.spect_plot.setMinimumSize(220,500)
         self.spect_plot.setLabel('left','I<sub>norm</sub>[arb]')
         self.spect_plot.setLabel('bottom',u'\u03c9'+'[cm<sup>-1</sup>]')
