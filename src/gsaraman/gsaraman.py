@@ -357,7 +357,7 @@ class SingleSpect(QtWidgets.QWidget):
         self.layout.addWidget(self.spect_plot,2,0)
 
 
-class MapFit(QtWidgets.QWidget):
+class MapFit(QtWidgets.QWidget): 
     def __init__(self, parent=None):
         super(MapFit,self).__init__(parent=parent)
         self.layout=QtWidgets.QGridLayout(self)
