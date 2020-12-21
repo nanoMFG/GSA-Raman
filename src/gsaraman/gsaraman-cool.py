@@ -338,7 +338,7 @@ class GSARaman(QtWidgets.QWidget):
         return any([(file_name[-4:]==ext and len(file_name)>4) for ext in extensions])
 
 
-    def retrieve_file_paths(dirName):
+    def retrieve_file_paths(self,dirName):
  
         filePaths = []
 
