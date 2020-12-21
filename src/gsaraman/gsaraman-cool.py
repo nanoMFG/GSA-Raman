@@ -31,10 +31,11 @@ layer5=[{'a':9.67793017e-01,'w':2.80824430e+01,'b':1.62490732e+03},{'a':4.300421
 graphite=[{'a':9.98426340e-01,'w':2.83949973e+01,'b':1.63840546e+03},{'a':4.22730948e-01,'w':7.98338055e+01,'b':2.76274546e+03}]
 cdat={'monolayer':layer1,'bilayer':layer2,'trilayer':layer3,'four layers':layer4,'five layers':layer5,'graphite':graphite}
 
-BLFitDegrees=['2','3']
+BLFitDegrees=['2','3','4','5','6','7','8']
 pg.setConfigOption('background', 'w')
 pg.setConfigOption('foreground', 'k')
 pg.mkPen('k')
+devel = False
 
 QW=QtWidgets
 QC=QtCore
@@ -122,20 +123,23 @@ class Main(QW.QMainWindow):
         about_dialog.exec()
 
     def importTestSpectrum(self):
-        print('Starting importTestSpectrum')
+        if devel:
+            print('Starting importTestSpectrum')
 
         path = os.path.join(self.repo_dir,'data','raw','spectest.csv')
         filelist.append(path)
         self.mainWidget.loadData(filelist[-1])
         self.mainWidget.fittingBtn.setEnabled(True)
 
-        print('Ending importTestSpectrum')
+        if devel:
+            print('Ending importTestSpectrum')
 
 class GSARaman(QtWidgets.QWidget):
     def __init__(self, mode='local',parent=None,*args,**kwargs):
         super(GSARaman,self).__init__(*args,**kwargs)
         
-        print('Starting GSARaman')
+        if devel:
+            print('Starting GSARaman')
 
         # self.resize(1280,720)
         self.singleSpect = SingleSpect()
@@ -203,13 +207,15 @@ class GSARaman(QtWidgets.QWidget):
         self.layout.addWidget(self.SpectWidget,1,0,1,4)
         # -------------------- -------------------- --------------------
 
-        print('Ending GSARaman')
+        if devel:
+            print('Ending GSARaman')
 
     # Opens file based on mode; appends file path to 'filelist'
     #@errorCheck(show_traceback=True)
     def openFileName(self):
 
-        print('Starting openFileName')
+        if devel: 
+            print('Starting openFileName')
 
         if self.mode == 'local':
             fpath = QtGui.QFileDialog.getOpenFileName()
@@ -231,13 +237,15 @@ class GSARaman(QtWidgets.QWidget):
 
         self.fittingBtn.setEnabled(True)
 
-        print('Ending openFileName')
+        if devel:
+            print('Ending openFileName')
 
 
-    @errorCheck(show_traceback=True)
+    #@errorCheck(show_traceback=True)
     def loadData(self, path):
 
-        print('Starting loadData')
+        if devel: 
+            print('Starting loadData')
 
         if path[-3:]=='csv':
             self.data=pd.read_csv(path)
@@ -265,19 +273,22 @@ class GSARaman(QtWidgets.QWidget):
             self.data = []
             raise ValueError('Please use a single spectrum only')
 
-        print('Ending loadData')
+        if devel:
+            print('Ending loadData')
 
 
     def clearPast(self):
 
-        print('Starting clearPast')
+        if devel:
+            print('Starting clearPast')
 
         if self.SpectWidget.isVisible():
             # self.SpectWidget.close()
             self.fittingBtn.setEnabled(False)
             self.exportBtn.setEnabled(False)
 
-        print('Ending clearPast')
+        if devel:
+            print('Ending clearPast')
 
             # clear data
             # clear degree??
@@ -291,14 +302,17 @@ class GSARaman(QtWidgets.QWidget):
 
     def setSingle(self):
 
-        print('Starting setSingle')
+        if devel:
+            print('Starting setSingle')
 
         del filelist[-1]
         self.spect_type='single'
         self.SpectWidget.setCurrentWidget(self.singleSpect)
-        self.singleSpect.normPlot(self.data)
 
-        print('Ending setSingle')
+        self.singleSpect.normPlotter(self.data)
+
+        if devel:
+            print('Ending setSingle')
 
 
     # def setMAP(self):
@@ -306,7 +320,8 @@ class GSARaman(QtWidgets.QWidget):
 
     def doFitting(self):
 
-        print('Starting doFitting')
+        if devel: 
+            print('Starting doFitting')
 
         if self.spect_type == 'single':
             self.singleSpect.fitToPlot()
@@ -315,7 +330,8 @@ class GSARaman(QtWidgets.QWidget):
 
         self.exportBtn.setEnabled(True)
 
-        print('Ending doFitting')
+        if devel:
+            print('Ending doFitting')
 
 
     def check_extension(self, file_name, extensions):
@@ -378,10 +394,11 @@ class GSARaman(QtWidgets.QWidget):
         #shutil.rmtree(dirpath)
 
 
-    @errorCheck(show_traceback=True)
+    #@errorCheck(show_traceback=True)
     def menubarExport(self):
 
-        print('Starting menubarExport')
+        if devel:
+            print('Starting menubarExport')
 
         if self.exportBtn.isEnabled():
             if self.spect_type == 'single':
@@ -390,20 +407,22 @@ class GSARaman(QtWidgets.QWidget):
         else:
             raise ValueError('Nothing to export')
 
-        print('Ending menubarExport')
+        if devel:
+            print('Ending menubarExport')
 
 
 class SingleSpect(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(SingleSpect,self).__init__(parent=parent)
 
-        print('Starting SingleSpect')
+        if devel:
+            print('Starting SingleSpect')
 
         self.layout=QtWidgets.QGridLayout(self)
         self.layout.setAlignment(QtCore.Qt.AlignTop)
         #self.data = []
         self.frequency = []
-        self.intensity_norm = []
+        # self.intensity_norm = []
         self.I_BL = []
 
         # -------------------- NormPlotWidget --------------------
@@ -484,11 +503,13 @@ class SingleSpect(QtWidgets.QWidget):
         self.layout.addWidget(self.DataWidget,0,1)
         # -------------------- -------------------- --------------------
 
-        print('Ending SingleSpect')
+        if devel:
+            print('Ending SingleSpect')
 
-    def normPlot(self, data):
+    def normPlotter(self, data):
 
-        print('Starting normPlot')
+        if devel:
+            print('Starting normPlotter')
 
         self.frequency = np.array(data.iloc[:,0])
         intensity = np.array(data.iloc[:,1])
@@ -502,6 +523,7 @@ class SingleSpect(QtWidgets.QWidget):
         self.frequency = self.frequency[a:]
         intensity = intensity[a:]
 
+        self.intensity_norm = []
         for i in intensity:
             self.intensity_norm.append((i-np.min(intensity))/(np.max(intensity)-np.min(intensity)))
 
@@ -530,21 +552,25 @@ class SingleSpect(QtWidgets.QWidget):
         self.BLFitBtn.clicked.connect(self.BLBtnTrigger)
         # -------------------- -------------------- --------------------
 
-        print('Ending normPlot')
+        if devel:
+            print('Ending normPlotter')
 
 
     def BLBtnTrigger(self):
 
-        print('Starting BLBtnTrigger')
+        if devel:
+            print('Starting BLBtnTrigger')
 
         self.BLPlot(self.degree,self.frequency,self.intensity_norm)
 
-        print('Ending BLBtnTrigger')
+        if devel:
+            print('Ending BLBtnTrigger')
 
 
     def BLPlot(self, degree, x, y):
 
-        print('Starting BLPlot')
+        if devel:
+            print('Starting BLPlot')
 
         n = degree
         I_raw = y
@@ -584,7 +610,8 @@ class SingleSpect(QtWidgets.QWidget):
         self.TabWidget.addTab(self.BaselinePlot,"BL")
         # -------------------- -------------------- --------------------
 
-        print('Ending BLPlot')
+        if devel:
+            print('Ending BLPlot')
 
 
     def Single_Lorentz(self, x,a,w,b):
@@ -593,7 +620,8 @@ class SingleSpect(QtWidgets.QWidget):
 
     def fitToPlot(self):
 
-        print('Starting fitToPlot')
+        if devel:
+            print('Starting fitToPlot')
 
         x = self.frequency
         y = self.intensity_norm
@@ -688,12 +716,14 @@ class SingleSpect(QtWidgets.QWidget):
         self.datawidgetlayout.addWidget(self.valuesWidget,1,0)
         # -------------------- -------------------- --------------------
 
-        print('Ending fitToPlot')
+        if devel:
+            print('Ending fitToPlot')
 
 
     def checkDiffs(self,G_params,Gp_params):
 
-        print('Starting checkDiffs')
+        if devel:
+            print('Starting checkDiffs')
 
         x=np.array([1,2,3,4,5,6])
         diffs=[]
@@ -731,7 +761,8 @@ class SingleSpect(QtWidgets.QWidget):
         self.diff_plot_exporter.params.param('width').setValue(1920, blockSignal=self.diff_plot_exporter.widthChanged)
         self.diff_plot_exporter.params.param('height').setValue(1080, blockSignal=self.diff_plot_exporter.heightChanged)
 
-        print('Ending checkDiffs')
+        if devel:
+            print('Ending checkDiffs')
         # -------------------- -------------------- --------------------
 
 
