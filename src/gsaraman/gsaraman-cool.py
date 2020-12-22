@@ -376,7 +376,7 @@ class GSARaman(QtWidgets.QWidget):
             with zip_file:
                 for fname in filepaths:
                     zip_file.write(fname)
-            path = os.path.join(os.getcwd(),zip_file)
+            path = os.path.join(os.getcwd(),zip_file.filename)
             subprocess.check_output('exportfile %s'%path,shell=True)
             shutil.rmtree(dirpath)
         else:
