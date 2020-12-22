@@ -17,6 +17,7 @@ import json
 from util.gwidgets import *
 from util.icons import Icon
 from utility import errorCheck
+import zipfile
 import tempfile
 
 
@@ -370,7 +371,7 @@ class GSARaman(QtWidgets.QWidget):
                 shutil.make_archive((name[:-4]), 'zip',dirpath) 
                 shutil.rmtree(dirpath)
         elif self.mode == 'nanohub':
-            filepaths = retrieve_file_paths(dirpath)
+            filepaths = self.retrieve_file_paths(dirpath)
             zip_file = zipfile.ZipFile('data.zip','w')
             with zip_file:
                 for fname in filepaths:
