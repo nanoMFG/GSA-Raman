@@ -14,11 +14,13 @@ import qimage2ndarray
 import shutil
 import subprocess, os, sys
 import json
+import zipfile
+import tempfile
+
 from util.gwidgets import *
 from util.icons import Icon
 from utility import errorCheck
-import zipfile
-import tempfile
+
 
 
 IMPORT_LOCATION = "/apps/importfile/bin/importfile"
@@ -36,7 +38,7 @@ BLFitDegrees=['2','3','4','5','6','7','8']
 pg.setConfigOption('background', 'w')
 pg.setConfigOption('foreground', 'k')
 pg.mkPen('k')
-devel = False
+devel = True
 
 QW=QtWidgets
 QC=QtCore
@@ -69,7 +71,8 @@ class Main(QW.QMainWindow):
 
         clearAction = QG.QAction("&Clear",self)
         clearAction.setIcon(Icon('trash.svg'))
-        clearAction.triggered.connect(self.mainWidget.clearPast)
+        clearAction.triggered.connect(lambda _: self.mainWidget.clearAll())
+        #clearAction.triggered.connect(self.mainWidget.clearAll)
 
         exitAction = QG.QAction("&Exit",self)
         exitAction.setIcon(Icon('log-out.svg'))
@@ -142,8 +145,7 @@ class GSARaman(QtWidgets.QWidget):
         if devel:
             print('Starting GSARaman')
 
-        # self.resize(1280,720)
-        self.singleSpect = SingleSpect()
+        # self.singleSpect = SingleSpect()
         # self.mapSpect = MAPSpect()
         self.spect_type = ''
         self.mode = mode
@@ -151,12 +153,6 @@ class GSARaman(QtWidgets.QWidget):
 
         self.layout = QtWidgets.QGridLayout(self)
         self.layout.setAlignment(QtCore.Qt.AlignTop)
-
-        # -------------------- SpectWidget --------------------
-        self.SpectWidget = QtWidgets.QStackedWidget()
-        self.SpectWidget.addWidget(self.singleSpect)
-        #self.SpectWidget.addWidget(self.mapSpect)
-        # -------------------- -------------------- --------------------        
 
         # -------------------- All the buttons --------------------
         # Upload File Button: 
@@ -179,7 +175,7 @@ class GSARaman(QtWidgets.QWidget):
             # 5. Displays diffs plot
             # 6. Displays fitting parameters
             # 7. Activates Export Data Button
-        self.fittingBtn = QtWidgets.QPushButton('Do Fitting')
+        self.fittingBtn = QtWidgets.QPushButton('Fit Spectrum')
         self.fittingBtn.clicked.connect(self.doFitting)
         self.fittingBtn.setEnabled(False)
         self.fittingBtn.setFixedSize(320,50)
@@ -205,7 +201,6 @@ class GSARaman(QtWidgets.QWidget):
         self.layout.addWidget(self.fittingBtn,0,1,1,1)
         self.layout.addWidget(self.exportBtn,0,2,1,1)
         self.layout.addWidget(self.statusBar,0,3,1,1)
-        self.layout.addWidget(self.SpectWidget,1,0,1,4)
         # -------------------- -------------------- --------------------
 
         if devel:
@@ -257,16 +252,16 @@ class GSARaman(QtWidgets.QWidget):
         rows=self.data.shape[0]
 
         if cols == 1:
-            self.clearPast()
+            self.clearAll()
             self.data=pd.DataFrame(self.data.iloc[0:rows/2,0],self.data.iloc[rows/2:rows,0])
             self.setSingle()
         elif cols == 2:
             if type(self.data.iloc[0,0]) is str:
-                self.clearPast()
+                self.clearAll()
                 self.data=self.data.iloc[1:rows,:]
                 self.setSingle()
             else:
-                self.clearPast()
+                self.clearAll()
                 self.data=self.data
                 self.setSingle()
         else:
@@ -278,18 +273,26 @@ class GSARaman(QtWidgets.QWidget):
             print('Ending loadData')
 
 
-    def clearPast(self):
+    def clearAll(self):
 
         if devel:
-            print('Starting clearPast')
+            print('Starting clearAll')
 
-        if self.SpectWidget.isVisible():
+
+        if self.spect_type =='single':
+            self.layout.itemAt(4).widget().deleteLater()
+
+        # if self.SpectWidget.isVisible():
             # self.SpectWidget.close()
-            self.fittingBtn.setEnabled(False)
-            self.exportBtn.setEnabled(False)
+            # self.fittingBtn.setEnabled(False)
+            # self.exportBtn.setEnabled(False)
+
+            #for i in reversed(range(self.layout.count())):
+            #    self.layout.itemAt(i).widget().setParent(None)
+
 
         if devel:
-            print('Ending clearPast')
+            print('Ending clearAll')
 
             # clear data
             # clear degree??
@@ -306,9 +309,28 @@ class GSARaman(QtWidgets.QWidget):
         if devel:
             print('Starting setSingle')
 
+        fpath = filelist[-1]
+        
+        if devel:
+            print('fpath: ', fpath)
+
+        fpath = os.path.split(fpath)[-1]
+
+        if devel:
+            print('fpath: ', fpath)
+
         del filelist[-1]
         self.spect_type='single'
-        self.SpectWidget.setCurrentWidget(self.singleSpect)
+        
+        self.singleSpect = SingleSpect()
+        self.layout.addWidget(self.singleSpect,1,0,1,4)
+
+        self.info_text = ("""
+        File Name: """+str(fpath)+"""
+        Spectrum Type: """+str(self.spect_type)+"""
+        Material: Graphene""")
+
+        self.singleSpect.fileinfoWidget.setText(self.info_text)
 
         self.singleSpect.normPlotter(self.data)
 
@@ -317,6 +339,12 @@ class GSARaman(QtWidgets.QWidget):
 
 
     # def setMAP(self):
+
+        # if devel:
+        #     print('Starting setMAP')
+
+        # self.mapSpect = MAPSpect()
+        # self.SpectWidget.addWidget(self.mapSpect)
 
 
     def doFitting(self):
@@ -358,7 +386,8 @@ class GSARaman(QtWidgets.QWidget):
         self.singleSpect.diff_plot_exporter.export(os.path.join(dirpath,'Diffs_Plot.png'))
 
         with open(os.path.join(dirpath,'fitting_paramters.txt'),'w') as resultsfile:
-            resultsfile.write("Fitting Parameters: %s" %self.singleSpect.values_text)
+            resultsfile.write("File Info: %s\n" %self.info_text)
+            resultsfile.write("\nFitting Parameters: %s" %self.singleSpect.values_text)
 
         if self.mode == 'local':
             path = os.path.join(os.getcwd(),"data")
@@ -423,8 +452,8 @@ class SingleSpect(QtWidgets.QWidget):
         self.layout.setAlignment(QtCore.Qt.AlignTop)
         #self.data = []
         self.frequency = []
-        # self.intensity_norm = []
-        self.I_BL = []
+        self.intensity_norm = []
+        # self.I_BL = []
 
         # -------------------- NormPlotWidget --------------------
         self.NormPlotWidget = QtWidgets.QWidget()
@@ -497,6 +526,21 @@ class SingleSpect(QtWidgets.QWidget):
         self.DataWidget.resize(340,620)
         self.DataWidget.setFixedWidth(340)
         self.datawidgetlayout.addWidget(SubheaderLabel('Fitting Parameters'),0,0)
+
+        self.valuesWidget = QtWidgets.QLabel("")
+        self.valuesWidget.resize(340,300)
+        self.valuesWidget.setFixedWidth(340)
+        self.datawidgetlayout.addWidget(self.valuesWidget,1,0)
+
+        self.datawidgetlayout.addWidget(SubheaderLabel('File Info'),2,0)
+
+        self.fileinfoWidget = QtWidgets.QLabel("""
+            File Name: 
+            Spectrum Type: 
+            Material: """)
+        self.fileinfoWidget.resize(340,200)
+        self.fileinfoWidget.setFixedWidth(340)
+        self.datawidgetlayout.addWidget(self.fileinfoWidget,3,0)
         # -------------------- -------------------- --------------------
 
         # -------------------- Adding components to SingleSpect widget --------------------
@@ -524,7 +568,7 @@ class SingleSpect(QtWidgets.QWidget):
         self.frequency = self.frequency[a:]
         intensity = intensity[a:]
 
-        self.intensity_norm = []
+        # self.intensity_norm = []
         for i in intensity:
             self.intensity_norm.append((i-np.min(intensity))/(np.max(intensity)-np.min(intensity)))
 
@@ -562,6 +606,7 @@ class SingleSpect(QtWidgets.QWidget):
         if devel:
             print('Starting BLBtnTrigger')
 
+        self.degree = int(self.BLFitDrop.currentText())
         self.BLPlot(self.degree,self.frequency,self.intensity_norm)
 
         if devel:
@@ -574,12 +619,12 @@ class SingleSpect(QtWidgets.QWidget):
             print('Starting BLPlot')
 
         n = degree
-        I_raw = y
-        W = x
+        I_raw = np.array(y)
+        W = np.array(x)
 
         polyx = np.array([W[0],W[int(len(W)/2)],W[len(W)-1]])
         polyy = np.array([I_raw[0],I_raw[int(len(W)/2)],I_raw[len(W)-1]])        
-        bkgfit = np.polyfit(polyx,polyy,degree)
+        bkgfit = np.polyfit(W,I_raw,degree)
         bkgpoly = 0
         for i in range(n):
             bkgpoly = bkgpoly + (bkgfit[i]*W**(n-i))
@@ -591,6 +636,7 @@ class SingleSpect(QtWidgets.QWidget):
     
         I_raw = I_raw-bkglin
     
+        self.I_BL = []
         self.I_BL = ((I_raw-np.min(I_raw))/np.max(I_raw-np.min(I_raw)))
 
         # -------------------- BaselinePlot --------------------
@@ -608,6 +654,7 @@ class SingleSpect(QtWidgets.QWidget):
         # -------------------- Add BL to TabWidget --------------------
         for i in list(reversed(range(self.TabWidget.count()))):
             self.TabWidget.removeTab(i)
+        self.valuesWidget.setText("")
         self.TabWidget.addTab(self.BaselinePlot,"BL")
         # -------------------- -------------------- --------------------
 
@@ -684,6 +731,11 @@ class SingleSpect(QtWidgets.QWidget):
         # -------------------- -------------------- --------------------
         
         # -------------------- Add Fit, Overlay and Diffs to TabWidget --------------------
+
+        for i in list(reversed(range(1, self.TabWidget.count()))):
+            self.TabWidget.removeTab(i)
+        self.valuesWidget.setText("")
+
         self.TabWidget.addTab(self.fit_plot,"Fit")
         self.TabWidget.addTab(self.overlay_plot,"Overlay")
         self.TabWidget.addTab(self.diff_plot,"Diffs")
@@ -695,26 +747,21 @@ class SingleSpect(QtWidgets.QWidget):
         # Contains all the fitting parameters
         self.values_text = ("""
         G Peak:
-            alpha="""+str(round(G_param[0],4))+"""
-            gamma="""+str(round(G_param[1],4))+"""
-            omega="""+str(round(G_param[2],4))+"""
+            Intensity="""+str(round(G_param[0],4))+"""
+            Width="""+str(round(G_param[1],4))+"""
+            Location="""+str(round(G_param[2],4))+"""
         G' Peak:
-            alpha="""+str(round(Gp_param[0],4))+"""
-            gamma="""+str(round(Gp_param[1],4))+"""
-            omega="""+str(round(Gp_param[2],4))+"""
+            Intensity="""+str(round(Gp_param[0],4))+"""
+            Width="""+str(round(Gp_param[1],4))+"""
+            Location="""+str(round(Gp_param[2],4))+"""
         D Peak:
-            alpha="""+str(round(D_param[0],4))+"""
-            gamma="""+str(round(D_param[1],4))+"""
-            omega="""+str(round(D_param[2],4))+"""
+            Intensity="""+str(round(D_param[0],4))+"""
+            Width="""+str(round(D_param[1],4))+"""
+            Location="""+str(round(D_param[2],4))+"""
         Quality="""+str(round(1-(D_param[0]/G_param[0]),4))+"""(1 - Intensity(D)/(G))
         Number of layers (best match): """+self.layers)
-        self.valuesWidget = QtWidgets.QLabel(self.values_text)
-        self.valuesWidget.resize(340,500)
-        self.valuesWidget.setFixedWidth(340)
-        # -------------------- -------------------- --------------------
-
-        # -------------------- Add valuesWidget to DataWidget --------------------
-        self.datawidgetlayout.addWidget(self.valuesWidget,1,0)
+        
+        self.valuesWidget.setText(self.values_text)
         # -------------------- -------------------- --------------------
 
         if devel:
