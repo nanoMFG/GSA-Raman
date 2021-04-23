@@ -38,7 +38,7 @@ BLFitDegrees=['2','3','4','5','6','7','8']
 pg.setConfigOption('background', 'w')
 pg.setConfigOption('foreground', 'k')
 pg.mkPen('k')
-devel = True
+devel = False
 
 QW=QtWidgets
 QC=QtCore
@@ -207,8 +207,8 @@ class GSARaman(QtWidgets.QWidget):
             print('Ending GSARaman')
 
     # Opens file based on mode; appends file path to 'filelist'
-    #@errorCheck(show_traceback=True)
-    def openFileName(self):
+    @errorCheck(show_traceback=False)
+    def openFileName(self, *args): # Note to self: do not beed to import "*args" but wrapper does not work without it. Check with Josh.
 
         if devel: 
             print('Starting openFileName')
@@ -237,7 +237,7 @@ class GSARaman(QtWidgets.QWidget):
             print('Ending openFileName')
 
 
-    #@errorCheck(show_traceback=True)
+    @errorCheck(show_traceback=False)
     def loadData(self, path):
 
         if devel: 
@@ -279,17 +279,11 @@ class GSARaman(QtWidgets.QWidget):
             print('Starting clearAll')
 
 
+        self.fittingBtn.setEnabled(False)
+        self.exportBtn.setEnabled(False)
+
         if self.spect_type =='single':
             self.layout.itemAt(4).widget().deleteLater()
-
-        # if self.SpectWidget.isVisible():
-            # self.SpectWidget.close()
-            # self.fittingBtn.setEnabled(False)
-            # self.exportBtn.setEnabled(False)
-
-            #for i in reversed(range(self.layout.count())):
-            #    self.layout.itemAt(i).widget().setParent(None)
-
 
         if devel:
             print('Ending clearAll')
