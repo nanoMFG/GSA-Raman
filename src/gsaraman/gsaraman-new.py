@@ -8,6 +8,9 @@ import pyqtgraph.exporters
 import pandas as pd
 import numpy as np
 from scipy.optimize import curve_fit
+from scipy import sparse
+from scipy.sparse.linalg import spsolve
+from scipy.signal import savgol_filter
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import qimage2ndarray
@@ -34,7 +37,7 @@ layer5=[{'a':9.67793017e-01,'w':2.80824430e+01,'b':1.62490732e+03},{'a':4.300421
 graphite=[{'a':9.98426340e-01,'w':2.83949973e+01,'b':1.63840546e+03},{'a':4.22730948e-01,'w':7.98338055e+01,'b':2.76274546e+03}]
 cdat={'monolayer':layer1,'bilayer':layer2,'trilayer':layer3,'four layers':layer4,'five layers':layer5,'graphite':graphite}
 
-BLFitDegrees=['2','3','4','5','6','7','8']
+BLFitDegrees=['532','405','633','785','830']
 pg.setConfigOption('background', 'w')
 pg.setConfigOption('foreground', 'k')
 pg.mkPen('k')
@@ -465,7 +468,7 @@ class SingleSpect(QtWidgets.QWidget):
         # -------------------- -------------------- --------------------
 
         # -------------------- BLFitBtn --------------------
-        self.BLFitBtn = QtWidgets.QPushButton('Fit BL')
+        self.BLFitBtn = QtWidgets.QPushButton('Pick '+u'\u03bb')
         self.BLFitBtn.setEnabled(False)
         self.BLFitBtn.resize(160,50)
         self.BLFitBtn.setFixedHeight(50)
@@ -478,7 +481,7 @@ class SingleSpect(QtWidgets.QWidget):
         self.RawPlotWidget.resize(400,620)
         self.rawplotlayout.addWidget(SubheaderLabel('Raw Plot'),0,0,1,3)
         self.rawplotlayout.addWidget(self.NormPlotWidget,1,0,1,3)
-        self.rawplotlayout.addWidget(BasicLabel('BL Degree:'),2,0,1,1)
+        self.rawplotlayout.addWidget(BasicLabel('Laser '+u'\u03bb'+':'),2,0,1,1)
         self.rawplotlayout.addWidget(self.BLFitDrop,2,1,1,1)
         self.rawplotlayout.addWidget(self.BLFitBtn,2,2,1,1)
         # -------------------- -------------------- --------------------
@@ -581,10 +584,10 @@ class SingleSpect(QtWidgets.QWidget):
         # -------------------- -------------------- --------------------
 
         self.BLFitBtn.setEnabled(True)
-        self.BLPlot(2, self.frequency, self.intensity_norm)
+        self.BLPlot(self.frequency, self.intensity_norm)
 
         # -------------------- Get value from BLFitDrop --------------------
-        self.degree = int(self.BLFitDrop.currentText())
+        self.wavelength = int(self.BLFitDrop.currentText())
         # -------------------- -------------------- --------------------
 
         # -------------------- Assign button trigger for BLFitBtn --------------------
@@ -600,35 +603,58 @@ class SingleSpect(QtWidgets.QWidget):
         if devel:
             print('Starting BLBtnTrigger')
 
-        self.degree = int(self.BLFitDrop.currentText())
-        self.BLPlot(self.degree,self.frequency,self.intensity_norm)
+        self.wavelength = int(self.BLFitDrop.currentText())
+        self.BLPlot(self.frequency,self.intensity_norm)
 
         if devel:
             print('Ending BLBtnTrigger')
 
 
-    def BLPlot(self, degree, x, y):
+    def BLPlot(self, x, y):
 
         if devel:
             print('Starting BLPlot')
 
-        n = degree
+        self.wavelength = 532
         I_raw = np.array(y)
         W = np.array(x)
 
-        polyx = np.array([W[0],W[int(len(W)/2)],W[len(W)-1]])
-        polyy = np.array([I_raw[0],I_raw[int(len(W)/2)],I_raw[len(W)-1]])        
-        bkgfit = np.polyfit(W,I_raw,degree)
-        bkgpoly = 0
-        for i in range(n):
-            bkgpoly = bkgpoly + (bkgfit[i]*W**(n-i))
-        I_raw = I_raw-bkgpoly
+        # polyx = np.array([W[0],W[int(len(W)/2)],W[len(W)-1]])
+        # polyy = np.array([I_raw[0],I_raw[int(len(W)/2)],I_raw[len(W)-1]])        
+        # bkgfit = np.polyfit(W,I_raw,degree)
+        # bkgpoly = 0
+        # for i in range(n):
+        #     bkgpoly = bkgpoly + (bkgfit[i]*W**(n-i))
+        # I_raw = I_raw-bkgpoly
     
-        m = (I_raw[len(W)-1]-I_raw[0])/(W[len(W)-1]-W[0])
-        b = I_raw[len(W)-1]-m*W[len(W)-1]
-        bkglin = m*W+b
+        # m = (I_raw[len(W)-1]-I_raw[0])/(W[len(W)-1]-W[0])
+        # b = I_raw[len(W)-1]-m*W[len(W)-1]
+        # bkglin = m*W+b
     
-        I_raw = I_raw-bkglin
+        # I_raw = I_raw-bkglin
+    
+        # self.I_BL = []
+        # self.I_BL = ((I_raw-np.min(I_raw))/np.max(I_raw-np.min(I_raw)))
+
+        window_length = 11
+        polyorder = 2
+
+        I_raw = savgol_filter(I_raw, window_length, polyorder, deriv=0, delta=1.0, axis=- 1, mode='interp', cval=0.0)
+
+        lam = 100000
+        p = 0.01
+        niter=10
+
+        L = len(I_raw)
+        D = sparse.diags([1,-2,1],[0,-1,-2], shape=(L,L-2))
+        w = np.ones(L)
+        for i in range(niter):
+            W = sparse.spdiags(w, 0, L, L)
+            Z = W + lam * D.dot(D.transpose())
+            z = spsolve(Z, w*I_raw)
+            w = p * (I_raw > z) + (1-p) * (I_raw < z)
+        
+        I_raw = I_raw-z
     
         self.I_BL = []
         self.I_BL = ((I_raw-np.min(I_raw))/np.max(I_raw-np.min(I_raw)))
@@ -659,6 +685,33 @@ class SingleSpect(QtWidgets.QWidget):
     def Single_Lorentz(self, x,a,w,b):
         return a*(((w/2)**2)/(((x-b)**2)+((w/2)**2)))
 
+    def wavelength_to_peak_estimate(self, lam):
+        peak = 107.36 * (1.24 * 10**3 / lam) + 2427.5
+        return peak
+
+    def strain_and_doping(self, G_peak, Gp_peak, laser_wavelength):
+        ideal_Gp_peak = self.wavelength_to_peak_estimate(laser_wavelength)
+        x_0,y_0 = (1581.6, ideal_Gp_peak) #ideal point based on lamba = 532nm, the most common laser in literature
+        strain_axis = 2.483*x_0 - 1233.62
+        doping_axis = 0.553*x_0 + 1817.71
+        x_e,y_e = (G_peak, Gp_peak) #fitted point; where do we find the fitted point?
+        b = y_e - 2.483*x_e
+        c = y_e - 0.553*x_e
+        exp_strain_axis = 2.483*x_e + b
+        exp_doping_axis = 0.553*x_e + c
+        x_s = (c+1233.62)/1.93
+        x_d = -1*(b-1817.71)/1.93
+        y_s = 2.483*x_s - 1233.62
+        y_d = 0.553*x_d + 1817.71
+        #(x_s, y_s) = intersection of strain axis and experimental doping axis
+        #(x_d, y_d) = intersection of doping axis and experimental strain axis
+        strain_distance = ((x_s - x_0)**2 + (y_s - y_0)**2)**0.5
+        doping_distance = ((x_d - x_0)**2 + (y_d - y_0)**2)**0.5
+        strain_unit = 155.242
+        doping_unit = 1.611
+        strain_present = strain_distance / strain_unit
+        doping_present = doping_distance / doping_unit
+        return strain_present, doping_present
 
     def fitToPlot(self):
 
@@ -670,7 +723,7 @@ class SingleSpect(QtWidgets.QWidget):
         I = self.I_BL
 
         pG=[1.1*np.max(I), 50, 1581.6] #a w b
-        pGp=[1.1*np.max(I), 50, 2675]
+        pGp=[1.1*np.max(I), 50, self.wavelength_to_peak_estimate(self.wavelength)]
         pD=[0.1*np.max(I),15,1350]
 
         #fit G peak
@@ -695,6 +748,8 @@ class SingleSpect(QtWidgets.QWidget):
         G_test=self.Single_Lorentz(x,test_params[0]['a'],test_params[0]['w'],test_params[0]['b'])
         Gp_test=self.Single_Lorentz(x,test_params[1]['a'],test_params[1]['w'],test_params[1]['b'])
         y_test=G_test+Gp_test
+
+        strain_amount, doping_amount = self.strain_and_doping(G_param[2],Gp_param[2], self.wavelength)
 
         # -------------------- fit_plot --------------------
         self.fit_plot = pg.PlotWidget(title='Fitted Spectrum',enableMenu=False,antialias=True)
@@ -753,7 +808,9 @@ class SingleSpect(QtWidgets.QWidget):
             Width="""+str(round(D_param[1],4))+"""
             Location="""+str(round(D_param[2],4))+"""
         Quality="""+str(round(1-(D_param[0]/G_param[0]),4))+"""(1 - Intensity(D)/(G))
-        Number of layers (best match): """+self.layers)
+        Number of layers (best match): """+self.layers+"""
+        Strain = """+str(round(strain_amount, 4))+""" %
+        Doping = """+str(round(doping_amount, 4))+ f' x 10\N{SUPERSCRIPT ONE}\N{SUPERSCRIPT TWO} e\N{SUPERSCRIPT MINUS}/cm\N{SUPERSCRIPT TWO}')
         
         self.valuesWidget.setText(self.values_text)
         # -------------------- -------------------- --------------------
