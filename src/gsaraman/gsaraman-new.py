@@ -810,7 +810,7 @@ class SingleSpect(QtWidgets.QWidget):
         Quality="""+str(round(1-(D_param[0]/G_param[0]),4))+"""(1 - Intensity(D)/(G))
         Number of layers (best match): """+self.layers+"""
         Strain = """+str(round(strain_amount, 4))+""" %
-        Doping = """+str(round(doping_amount, 4))+""" units""")
+        Doping = """+str(round(doping_amount, 4))+ f' x 10\N{SUPERSCRIPT ONE}\N{SUPERSCRIPT TWO} e\N{SUPERSCRIPT MINUS}/cm\N{SUPERSCRIPT TWO}')
         
         self.valuesWidget.setText(self.values_text)
         # -------------------- -------------------- --------------------
