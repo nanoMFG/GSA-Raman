@@ -1,4 +1,4 @@
-from gresq.database.models import Sample, PreparationStep
+from grdb.database.v1_1_0.models import Sample, PreparationStep
 import pandas as pd
 import os
 

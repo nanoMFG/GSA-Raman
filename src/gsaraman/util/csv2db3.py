@@ -1,4 +1,4 @@
-from gresq.database.models import (
+from grdb.database.v1_1_0.models import (
     Sample,
     PreparationStep,
     Recipe,
