@@ -1,7 +1,7 @@
 import os
 
 import pandas as pd
-from gresq.database import (
+from grdb.database.v1_1_0 import (
     sample,
     preparation_step,
     recipe,
